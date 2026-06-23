@@ -1,6 +1,8 @@
 import{ Client, GatewayIntentBits, REST, Routes } from 'discord.js';
 import { commands } from "./src/comandos.js";
 import dotenv from "dotenv";
+import "./src/index.js";
+
 
 dotenv.config();
 
