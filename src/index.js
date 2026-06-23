@@ -1,4 +1,5 @@
-import { client } from "../app.js";
+import { client } from "./client.js";
+
 import { comandoCalculadora } from "./modules/calculadora/calculadora.js";
 import { comandoDog } from "./modules/dog/dog.js";
 import { comandoAdivinhar } from "./modules/adivinhar/adivinhar.js";
