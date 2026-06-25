@@ -79,15 +79,12 @@ jobs:
           script: |
             # Define o caminho de configuração do kubectl para a sessão SSH
             export KUBECONFIG=~/.kube/config
-            
-            # Aplicar manifesto atualizado
+
             kubectl apply -f /tmp/k8s-deploy/k8s/
-            
-            # Forçar o Kubernetes a baixar a nova imagem ":latest" reiniciando o Deployment
-            kubectl rollout restart deployment/quiteria-bot
-            
-            # Aguardar o rollout finalizar com sucesso
-            kubectl rollout status deployment/quiteria-bot --timeout=90s
+
+            kubectl rollout restart deployment/quiteria-bot -n quiteria
+
+            kubectl rollout status deployment/quiteria-bot -n quiteria --timeout=90s
             
             # Limpar arquivos temporários
             rm -rf /tmp/k8s-deploy
