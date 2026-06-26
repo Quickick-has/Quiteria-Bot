@@ -19,6 +19,11 @@ spec:
         - name: quiteria-bot
           image: ghcr.io/quickick-has/quiteria-bot:latest
           imagePullPolicy: Always
+          env:
+            - name: YTDLP_BIN
+              value: /usr/local/bin/yt-dlp
+            - name: YTDLP_COOKIES_FILE
+              value: /etc/quiteria/cookies.txt
           resources:
             limits:
               memory: 512Mi
@@ -29,5 +34,14 @@ spec:
           envFrom:
             - secretRef:
                 name: quiteria-bot-secrets
+          volumeMounts:
+            - name: ytdlp-cookies
+              mountPath: /etc/quiteria/cookies.txt
+              subPath: cookies.txt
+              readOnly: true
       imagePullSecrets:
         - name: ghcr-secret
+      volumes:
+        - name: ytdlp-cookies
+          secret:
+            secretName: quiteria-ytdlp-cookies
