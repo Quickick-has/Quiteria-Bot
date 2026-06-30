@@ -10,12 +10,13 @@ FROM node:24-alpine
 WORKDIR /usr/src/app
 ENV NODE_ENV=production
 RUN apk add --no-cache curl ca-certificates \
-	&& curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
+	&& ARCH=$(uname -m) \
+	&& if [ "$ARCH" = "aarch64" ]; then YTDLP_FILE="yt-dlp_musllinux_aarch64"; else YTDLP_FILE="yt-dlp_musllinux"; fi \
+	&& curl -L "https://github.com/yt-dlp/yt-dlp/releases/latest/download/${YTDLP_FILE}" -o /usr/local/bin/yt-dlp \
 	&& chmod a+rx /usr/local/bin/yt-dlp
 COPY package*.json ./
 RUN npm ci --omit=dev
 COPY --from=builder /usr/src/app ./
 
-# Execute a aplicação com um usuário sem privilégios de root para maior segurança
 USER node
 CMD ["node", "app.js"]
