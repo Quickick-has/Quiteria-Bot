@@ -1,6 +1,8 @@
 import { spawn, spawnSync } from 'node:child_process';
+import { copyFileSync } from 'node:fs';
 
 let _resolvedBinary = null;
+let _cookiesReady = false;
 
 function tryCommand(cmd, args = ['--version']) {
 	try {
@@ -14,13 +16,11 @@ function tryCommand(cmd, args = ['--version']) {
 export function getYtDlpBinary() {
 	if (_resolvedBinary) return _resolvedBinary;
 
-	// 1) explicit override
 	if (process.env.YTDLP_BIN) {
 		_resolvedBinary = process.env.YTDLP_BIN;
 		return _resolvedBinary;
 	}
 
-	// 2) system `yt-dlp` in PATH
 	if (tryCommand('yt-dlp')) {
 		_resolvedBinary = 'yt-dlp';
 		return _resolvedBinary;
@@ -32,12 +32,35 @@ export function getYtDlpBinary() {
 	);
 }
 
+function getWritableCookiesPath() {
+	const source = process.env.YTDLP_COOKIES_FILE;
+	if (!source) return null;
+
+	const tmpPath = '/tmp/cookies.txt';
+
+	// copia só uma vez por processo; o yt-dlp regrava esse arquivo a cada
+	// execução para persistir cookies atualizados, então sempre re-sincroniza
+	// a partir da fonte montada (Secret) se a cópia em /tmp ainda não existe
+	try {
+		copyFileSync(source, tmpPath);
+		_cookiesReady = true;
+	} catch (err) {
+		if (!_cookiesReady) {
+			throw new Error(`Falha ao copiar cookies para diretório gravável: ${err.message}`);
+		}
+		// se já copiou antes e falhou agora, segue usando a cópia existente
+	}
+
+	return tmpPath;
+}
+
 function runYtDlp(args) {
 	const binaryPath = getYtDlpBinary();
 	const finalArgs = [...args];
 
-	if (process.env.YTDLP_COOKIES_FILE) {
-		finalArgs.push('--cookies', process.env.YTDLP_COOKIES_FILE);
+	const cookiesPath = getWritableCookiesPath();
+	if (cookiesPath) {
+		finalArgs.push('--cookies', cookiesPath);
 	} else if (process.env.YTDLP_COOKIES_FROM_BROWSER) {
 		finalArgs.push('--cookies-from-browser', process.env.YTDLP_COOKIES_FROM_BROWSER);
 	}
