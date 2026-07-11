@@ -53,8 +53,8 @@ export const commands = [
     },
     {
         name: 'laura',
-        description: 'Comando para a Laura'
-    }
+        description: 'Comando para fazer uma doação para a Laura'
+    },
 ];
 
 
