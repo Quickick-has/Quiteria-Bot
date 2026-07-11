@@ -14,6 +14,9 @@
   "dependencies": {
     "discord.js": "^14.17.3",
     "dotenv": "^17.4.2",
-    "web-streams-polyfill": "^4.1.0"
+    "web-streams-polyfill": "^4.1.0",
+    "@discordjs/voice": "^0.19.2",
+    "yt-dlp-static": "^1.0.6",
+    "ffmpeg-static": "^4.4.0"
   }
 }

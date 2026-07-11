@@ -53,8 +53,30 @@ export const commands = [
     },
     {
         name: 'laura',
-        description: 'Comando para fazer uma doação para a Laura'
+        description: 'Comando para a Laura'
     },
+    {
+        name: 'tocar',
+        description: 'Comando para tocar música',
+        options: [{
+            type: 3,
+            name: 'query',
+            description: 'Digite a URL ou o nome da música',
+            required: true
+        }]
+    },
+    {
+        name: 'pausar',
+        description: 'Comando para pausar a música',
+    },
+    {
+        name: 'parar',
+        description: 'Comando para parar a música',
+    },
+    {
+        name: 'passar',
+        description: 'Comando para pular a música',
+    }
 ];
 
 

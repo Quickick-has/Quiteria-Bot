@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quiteria-bot
+  namespace: quiteria
+  labels:
+    app: quiteria-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quiteria-bot
+  template:
+    metadata:
+      labels:
+        app: quiteria-bot
+    spec:
+      containers:
+        - name: quiteria-bot
+          image: ghcr.io/quickick-has/quiteria-bot:latest
+          imagePullPolicy: Always
+          env:
+            - name: YTDLP_BIN
+              value: /usr/local/bin/yt-dlp
+            - name: YTDLP_COOKIES_FILE
+              value: /etc/quiteria/cookies.txt
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: 500m
+            requests:
+              memory: 256Mi
+              cpu: 250m
+          envFrom:
+            - secretRef:
+                name: quiteria-bot-secrets
+          volumeMounts:
+            - name: ytdlp-cookies
+              mountPath: /etc/quiteria/cookies.txt
+              subPath: cookies.txt
+              readOnly: true
+      imagePullSecrets:
+        - name: ghcr-secret
+      volumes:
+        - name: ytdlp-cookies
+          secret:
+            secretName: quiteria-ytdlp-cookies
